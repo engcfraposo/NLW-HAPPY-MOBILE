@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Switch } from 'react-native';
+import { Switch, ToastAndroid } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import * as Yup from 'yup';
-import { DataContainer, ImageInput, Input, Label, LabelError, LabelWeekend, SwitchContainer, TextArea, Title } from './styles';
+import * as ImagePicker from 'expo-image-picker';
+import { DataContainer, ImageContainer, ImageInput, Input, Label, LabelError, LabelWeekend, OrphanageImage, SwitchContainer, TextArea, Title } from './styles';
 import NextStepButton from '../../Components/NextStepButton';
 import { Bold, SemiBold } from '../../fonts';
 import { useFormik } from 'formik';
@@ -14,7 +15,7 @@ import { PositionRouteParams } from '../../@types/types';
 export default function OrphanageData() {
 
   const [openWeekends, setOpenWeekends] = useState<boolean>(true);
-  const [images, setImages] = useState<File[]>([]);
+  const [images, setImages] = useState<string[]>([]);
 
   const navigation = useNavigation();
   const route  = useRoute();
@@ -58,23 +59,54 @@ export default function OrphanageData() {
       data.append('instructions', instructions);
       data.append('opening_hours', opening_hours);
       data.append('open_on_weekends', String(openWeekends));
-      const HandleSubmit = async () =>{
+      images.forEach((image, index) => {
+        data.append('images', {
+          name: `image_${index}.jpg`,
+          type: 'image/jpg',
+          uri: image,
+        } as any);
+      });
+
+      const handleSubmit = async () =>{
         try {
           await api.post('orphanages', data);
-          alert('Dados alterados com sucesso!');
+          ToastAndroid.show('Dados alterados com sucesso!', ToastAndroid.SHORT);
           return navigation.navigate('OrphanageMap');
         } catch (error) {
           console.log(error);
-          return alert('Erro no cadastro sucesso!');
+          return ToastAndroid.show('Erro no cadastro sucesso!', ToastAndroid.SHORT);
         }
       }
-      HandleSubmit();
+      handleSubmit();
     },
   });
 
   const { handleChange, handleBlur, handleSubmit, errors, values } = formik;
 
+  const handleSelectImage = async () => {
+    const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+    if(status !== 'granted'){
+      ToastAndroid.show(
+        'Eita..Precisamos de sua permissão de acesso as suas fotos!', 
+        ToastAndroid.SHORT
+        );
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    });
+    
+    if(result.cancelled){
+      return;
+    }
 
+    const { uri } = result;
+    
+    setImages([...images, uri]);
+
+  }
   return (
     <DataContainer contentContainerStyle={{ padding: 24 }}>
       <Title 
@@ -121,7 +153,17 @@ export default function OrphanageData() {
       >
         Fotos
       </Label>
-      <ImageInput onPress={() => {}}>
+
+      <ImageContainer>
+      {images.map( image => (
+        <OrphanageImage 
+          key={image}
+          source={{uri: image}} 
+        />
+      ))}
+      </ImageContainer>
+      
+      <ImageInput onPress={handleSelectImage}>
         <Feather name="plus" size={24} color="#15B6D6" />
       </ImageInput>
 

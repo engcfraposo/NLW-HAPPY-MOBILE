@@ -71,3 +71,15 @@ export const SwitchContainer = styled.View`
     justify-content: space-between;
     margin-top: 16px;
 `
+
+export const ImageContainer = styled.View`
+    flex-direction: row;
+`
+
+export const OrphanageImage = styled.Image`
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    margin-right: 8px;
+`
