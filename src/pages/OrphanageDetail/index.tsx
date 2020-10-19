@@ -80,9 +80,9 @@ const OrphanageDetail = () => {
           <ScheduleCard typeCard='info' hours={orphanage.opening_hours} />
           <ScheduleCard typeCard={orphanage.open_on_weekends?'open':'closed'}/>
         </ScheduleContainer>
-
+        
         <WhatsappButton />
-
+        
       </DetailsContainer>
     </OrphanageContainer>
   )

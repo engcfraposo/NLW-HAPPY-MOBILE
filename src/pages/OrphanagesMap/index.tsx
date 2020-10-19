@@ -24,28 +24,28 @@ const OrphanagesMap: React.FC = () => {
 
   return (
     <Container>
-    <Map 
-      provider={PROVIDER_GOOGLE}
-      initialRegion={{
-        latitude: -8.0625462,
-        longitude: -34.9175803,
-        latitudeDelta: 0.008,
-        longitudeDelta: 0.008,
-      }}
-    >
-      {orphanages.map(orphanage => (
-        <Marker 
-        key={orphanage.id}
-        calloutAnchor={{
-          x: 2.7,
-          y: 0.8,
+      <Map 
+        provider={PROVIDER_GOOGLE}
+        initialRegion={{
+          latitude: -8.0625462,
+          longitude: -34.9175803,
+          latitudeDelta: 0.008,
+          longitudeDelta: 0.008,
         }}
-          icon={mapMarker}
-          coordinate={{
-            latitude: orphanage.latitude,
-            longitude: orphanage.longitude,
+      >
+        {orphanages.map(orphanage => (
+          <Marker 
+          key={orphanage.id}
+          calloutAnchor={{
+            x: 2.7,
+            y: 0.8,
           }}
-        >
+            icon={mapMarker}
+            coordinate={{
+              latitude: orphanage.latitude,
+              longitude: orphanage.longitude,
+            }}
+          >
           <Callout tooltip onPress={() => navigation.navigate('OrphanageDetail', {id:orphanage.id})}>
             <OrphanageContainer>
               <OrphanageName style={Bold}>{orphanage.name}</OrphanageName>
